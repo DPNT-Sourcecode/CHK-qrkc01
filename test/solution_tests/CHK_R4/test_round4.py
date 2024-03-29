@@ -26,3 +26,6 @@ class TestCheckoutR4NewSolution():
         assert checkout("RRRQ") == 150
         assert checkout("VVVV") == 180
         assert checkout("HHHHHHHHH") == 85
+        assert checkout ("UUU") == 120
+        assert checkout("FFF") == 20
+        assert checkout("FFFF") == 30

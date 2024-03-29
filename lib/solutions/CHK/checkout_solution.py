@@ -188,6 +188,7 @@ def checkout(skus: str):
     }
     free_item_offers = {
         'E': [('B', 2, 1)],
+        'F': [('F', 2, 1)],
         'N': [('M', 3, 1)], 
         'R': [('Q', 3, 1)], 
         'U': [('U', 2, 1)], 
