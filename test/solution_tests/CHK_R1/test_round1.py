@@ -1,7 +1,7 @@
 from lib.solutions.CHK.checkout_solution import checkout_r1
 
 
-class TestCheckoutSolution():
+class TestCheckoutR1Solution():
     def test_single_item(self):
         assert checkout_r1("C") == 20
         assert checkout_r1("D") == 15

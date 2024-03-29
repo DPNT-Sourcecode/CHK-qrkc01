@@ -97,10 +97,11 @@ def checkout(skus: str):
     Returns:
     - int: The total checkout value or -1 for illegal input
     """
-    prices = {'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40}
+    prices = {'A': 50, 'B': 30, 'C': 20, 'D': 15, 'E': 40, 'F': 10}
     discount_offers = {
         'A': [(5, 200), (3, 130)],
         'B': [(2, 45)],
+        'F': [(3,20)] # same as Buy 2Fs get another F free
     }
     free_item_offers = {
         'E': [('B', 2, 1)], 

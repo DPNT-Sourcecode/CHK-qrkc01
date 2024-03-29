@@ -1,7 +1,7 @@
 from lib.solutions.CHK.checkout_solution import checkout_r2
 
 
-class TestCheckoutNewSolution():
+class TestCheckoutR2Solution():
     def test_discount_offers(self):
         assert checkout_r2("AAA") == 130
         assert checkout_r2("AAAAAA") == 250
