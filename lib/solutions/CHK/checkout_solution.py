@@ -114,21 +114,24 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
 
     if group_discount_offers:
         for group_items, (required_qty, group_price) in group_discount_offers.items():
-            # Count how many items in the group are in the basket
-            group_count = sum(items[item] for item in group_items if item in items)
-            # Calculate how many times the group offer can be applied
-            offer_count = group_count // required_qty
+            group_items_in_basket = {item: items[item] for item in group_items if item in items}
+            while sum(group_items_in_basket.values()) >= required_qty:
+                total_price += group_price
+                # Deduct the items prioritizing the most expensive to leave the cheapest for last
+                for item in sorted(group_items_in_basket, key=lambda x: prices[x], reverse=True):
+                    # Stop if we've deducted the required quantity
+                    if required_qty == 0:
+                        break  
+                    if group_items_in_basket[item] > 0:
+                         # Deduct from main items list
+                        items[item] -= 1 
+                        group_items_in_basket[item] -= 1
+                        required_qty -= 1
+                    if group_items_in_basket[item] == 0:
+                         # No longer needs to be considered for group offer
+                        del group_items_in_basket[item] 
+                required_qty = group_discount_offers[group_items][0]
 
-            if offer_count > 0:
-                # Determine which items to apply the offer to
-                sorted_items = sorted([(item, prices[item]) for item in group_items if item in items], key=lambda x: x[1])
-                total_price += offer_count * group_price
-                # Deduct the items from the basket
-                for _ in range(offer_count * required_qty):
-                    for item, _ in sorted_items:
-                        if items[item] > 0:
-                            items[item] -= 1
-                            break
     print(items)
     
     # Apply free item offers based on item comparison
@@ -257,11 +260,3 @@ def checkout(skus: str):
 
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers, group_discount_offers)
     return total
-
-
-
-
-
-
-
-
