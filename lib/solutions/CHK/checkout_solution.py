@@ -113,26 +113,30 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
     total_price = 0
 
     if group_discount_offers:
-        for group_items, (required_qty, group_price) in group_discount_offers.items():
-            group_items_in_basket = {item: items[item] for item in group_items if item in items}
-            while sum(group_items_in_basket.values()) >= required_qty:
-                total_price += group_price
-                # Deduct the items prioritizing the most expensive to leave the cheapest for last
+        for group, (qty_needed, group_price) in group_discount_offers.items():
+            group_items_in_basket = {item: items[item] for item in group if item in items}
+            group_count = sum(group_items_in_basket.values())
+            
+            while group_count >= qty_needed:
+                total_price += group_price 
+                qty_deducted = 0
+                
+                # Sort items in descending order of price, but deduct starting from the end (cheapest first)
                 for item in sorted(group_items_in_basket, key=lambda x: prices[x], reverse=True):
-                    # Stop if we've deducted the required quantity
-                    if required_qty == 0:
-                        break  
-                    if group_items_in_basket[item] > 0:
-                         # Deduct from main items list
-                        items[item] -= 1 
+                    while group_items_in_basket[item] > 0 and qty_deducted < qty_needed:
                         group_items_in_basket[item] -= 1
-                        required_qty -= 1
-                    if group_items_in_basket[item] == 0:
-                         # No longer needs to be considered for group offer
-                        del group_items_in_basket[item] 
-                required_qty = group_discount_offers[group_items][0]
+                        items[item] -= 1
+                        qty_deducted += 1
+                        if items[item] == 0:
+                            # Remove item if count goes to 0
+                            del items[item]  
+                        if qty_deducted == qty_needed:
+                            break
 
-    print(items)
+                # Recalculate for the next potential group offer application
+                group_items_in_basket = {item: items[item] for item in group if item in items}
+                group_count = sum(group_items_in_basket.values())
+
     
     # Apply free item offers based on item comparison
     for item, quantity in items.copy().items():
