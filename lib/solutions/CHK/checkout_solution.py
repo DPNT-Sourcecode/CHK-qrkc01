@@ -65,7 +65,7 @@ def checkout(skus: str):
     
     total_price = 0
     # function to handle any special offers and negate quantities for bygof
-    def apply_offers(item,quantity,offers):
+    def apply_offers(item,quantity,offers, items):
         total = 0
         for offer_type, *offer_details in offers:
             if offer_type == 'discount':
@@ -73,12 +73,12 @@ def checkout(skus: str):
                 while quantity >= required_qty:
                     total += offer_price
                     quantity -= required_qty
-            elif offer_type == "free" and offer_details[1] in items:
+            elif offer_type == "free":
                 required_qty, free_item, free_qty = offer_details
-                if quantity >= required_qty:
-                    eligible_free_items = min(items[free_item], quantity // required_qty*free_qty)
+                if quantity >= required_qty and free_item in items:
+                    eligible_free_items = min(items[free_item], (quantity // required_qty)*free_qty)
                     items[free_item] -= eligible_free_items
-                    if items[free_item] == 0:
+                    if items[free_item] <= 0:
                         del items[free_item]
         # Add any left over quantities post offers
         total += quantity * prices[item]
@@ -86,8 +86,9 @@ def checkout(skus: str):
     
     for item,quantity in list(items.items()):
         if item in offers:
-            total_price += apply_offers(item,quantity,offers[item])
+            total_price += apply_offers(item,quantity,offers[item], items)
             del items[item]
         else:
             total_price += quantity * prices[item]
     return total_price
+
