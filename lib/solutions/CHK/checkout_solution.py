@@ -104,7 +104,7 @@ def checkout(skus: str):
     }
     free_item_offers = {
         'E': [('B', 2, 1)], 
-        'F': [(3,2)]
+        'F': [('F', 2, 1)]
     }
     items = {}
 
@@ -119,9 +119,14 @@ def checkout(skus: str):
     # Apply free item offers
     for item, offers in free_item_offers.items():
         for free_item, required_qty, free_qty in offers:
-            if item in items and free_item in items:
-                num_free_items = (items[item] // required_qty) * free_qty
-                items[free_item] = max(0, items[free_item] - num_free_items)
+            if item in items:
+                # To handle cases for Buy X get Y free for the current item
+                if free_item == item:
+                    total_free_items = (items[item]//(required_qty+1))*free_qty
+                    items[item] += total_free_items
+                elif free_item in items:
+                    num_free_items = (items[item] // required_qty) * free_qty
+                    items[free_item] = max(0, items[free_item] - num_free_items)
 
     total_price = 0
     # Apply discount offers and calculate total
