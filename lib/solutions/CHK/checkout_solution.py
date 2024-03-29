@@ -2,7 +2,7 @@
 
 # noinspection PyUnusedLocal
 # skus = unicode string
-def checkout(skus: str):
+def checkout_old(skus: str):
     """
     Calculate the total checkout value of all items in the basket
     considering any special offers
@@ -36,3 +36,5 @@ def checkout(skus: str):
             total_price += quantity * prices[item]    
     return total_price    
 
+
+def 
