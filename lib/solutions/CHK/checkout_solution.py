@@ -191,7 +191,7 @@ def checkout(skus: str):
         'F': [('F', 2, 1)],
         'N': [('M', 3, 1)], 
         'R': [('Q', 3, 1)], 
-        'U': [('U', 2, 1)], 
+        'U': [('U', 3, 1)], 
     }
 
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers)
