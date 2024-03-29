@@ -114,28 +114,29 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
 
     if group_discount_offers:
         for group_items, (required_qty, group_price) in group_discount_offers.items():
-             while True:
-                # Filter items eligible for the group offer and count them
-                eligible_items = {item: qty for item, qty in items.items() if item in group_items}
-                total_eligible_qty = sum(eligible_items.values())
+            available_group_items = [(item, qty) for item, qty in items.items() if item in group_items]
+        
+            while True:
+                # Filter and sort items by price, favoring cheaper items for the discount
+                available_group_items.sort(key=lambda x: prices[x[0]])
+                total_eligible_qty = sum(qty for _, qty in available_group_items)
 
-                # Break if not enough items for the offer
                 if total_eligible_qty < required_qty:
-                    break
-                
-                total_price += group_price 
-                deducted_qty = 0
-                # Deduct items starting with the cheapest
-                for item in sorted(eligible_items, key=lambda x: prices[x]):
-                    while deducted_qty < required_qty and eligible_items[item] > 0:
-                        items[item] -= 1
-                        deducted_qty += 1
-                        eligible_items[item] -= 1
-                        if deducted_qty == required_qty:
-                            break
+                    break  # Not enough items for another application of the discount
 
-                # Break if we cannot apply the group offer again
-                if deducted_qty < required_qty:
+                total_price += group_price
+                # Deduct the required_qty from the sorted list, favoring cheaper items first
+                for i, (item, qty) in enumerate(available_group_items):
+                    if required_qty <= 0:
+                        break
+                    deduct_qty = min(qty, required_qty)
+                    available_group_items[i] = (item, qty - deduct_qty)
+                    required_qty -= deduct_qty
+                    items[item] -= deduct_qty  
+
+                # Only keep items with qty > 0 for possible further deductions
+                available_group_items = [(item, qty) for item, qty in available_group_items if qty > 0]
+                if required_qty > 0: 
                     break
 
     
@@ -265,6 +266,7 @@ def checkout(skus: str):
 
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers, group_discount_offers)
     return total
+
 
 
 
