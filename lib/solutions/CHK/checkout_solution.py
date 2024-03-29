@@ -64,29 +64,33 @@ def checkout(skus: str):
             items[sku] = 1
     
     total_price = 0
-    # function to handle any special offers and negate quantities for bygof
-    def apply_offers(item,quantity,offers, items):
-        total = 0
-        for offer_type, *offer_details in sorted(offers, key=lambda x: -x[1]):
-            if offer_type == 'discount':
-                required_qty, offer_price = offer_details
-                while quantity >= required_qty:
-                    total += offer_price
-                    quantity -= required_qty
-            elif offer_type == "free":
-                required_qty, free_item, free_qty = offer_details
-                if quantity >= required_qty and free_item in items:
-                    eligible_free_items = min(items[free_item], (quantity // required_qty)*free_qty)
-                    items[free_item] = max(0, items[free_item] - eligible_free_items)
-        # Add any left over quantities post offers
-        total += quantity * prices[item]
-        return total
+    # function to handle any special offers
+    def apply_discounts(item, quantity, discount_offers):
+        total_discounted_price = 0
+        for required_qty, offer_price in sorted(discount_offers, key=lambda x: -x[0]):
+            num_offers = quantity // required_qty
+            total_discounted_price += num_offers * offer_price
+            quantity -= num_offers * required_qty
+        return total_discounted_price, quantity
+    
+    def apply_free_items(item, quantity, free_item_offers, items):
+        for required_qty, free_item, free_qty in free_item_offers:
+            if free_item in items:
+                eligible_free_items = (quantity // required_qty) * free_qty
+                items[free_item] = max(0, items[free_item]-eligible_free_items)
     
     for item,quantity in list(items.items()):
         if item in offers:
-            total_price += apply_offers(item,quantity,offers[item], items)
+            discount_offers = [(details[1], details[2]) for details in offers[item] if details[0] == 'discount']
+            free_item_offers = [(details[1], details[2], details[3]) for details in offers[item] if details[0] == 'free']
+        
+            discounted_price, remaining_qty = apply_discounts(item, quantity, discount_offers)
+            total_price += discounted_price
+            apply_free_items(item, remaining_qty, free_item_offers, items)
+            total_price += remaining_qty * prices[item]
         else:
             total_price += quantity * prices[item]
     return total_price
+
 
 
