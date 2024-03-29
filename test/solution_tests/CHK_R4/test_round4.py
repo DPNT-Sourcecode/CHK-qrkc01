@@ -29,4 +29,3 @@ class TestCheckoutR4NewSolution():
         assert checkout_r4 ("UUU") == 120
         assert checkout_r4("FFF") == 20
         assert checkout_r4("FFFF") == 30
-

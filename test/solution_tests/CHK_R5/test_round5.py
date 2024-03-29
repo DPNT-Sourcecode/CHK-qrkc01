@@ -33,4 +33,3 @@ class TestCheckoutR5NewSolution():
     def test_group_discount_offers(self):
         # 45 Offer + Min(S,T,X,Y) = X = 17
         assert checkout("STXY") == 62
-

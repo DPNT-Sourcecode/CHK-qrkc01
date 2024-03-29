@@ -110,6 +110,7 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
             items[sku] += 1
         else:
             items[sku] = 1
+    total_price = 0
 
     if group_discount_offers:
         for group_items, (required_qty, group_price) in group_discount_offers.items():
@@ -122,11 +123,11 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
                 for item in group_items:
                     if required_qty == 0:
                         break
-                if available_items[item] > 0:
-                    deduct_count = min(available_items[item], required_qty)
-                    available_items[item] -= deduct_count
-                    items[item] -= deduct_count
-                    required_qty -= deduct_count
+                    if available_items[item] > 0:
+                        deduct_count = min(available_items[item], required_qty)
+                        available_items[item] -= deduct_count
+                        items[item] -= deduct_count
+                        required_qty -= deduct_count
 
     
     # Apply free item offers based on item comparison
@@ -142,7 +143,6 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
                     num_free_items = (quantity // required_qty) * free_qty
                     items[offer_item] = max(0, items[offer_item] - num_free_items)
 
-    total_price = 0
     # Apply discount offers and calculate total
     for item, quantity in items.items():
         if item in discount_offers:
@@ -256,6 +256,3 @@ def checkout(skus: str):
 
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers, group_discount_offers)
     return total
-
-
-
