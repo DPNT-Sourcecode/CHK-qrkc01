@@ -52,7 +52,7 @@ def checkout(skus: str):
     offers = {
         'A': [('discount', 5,200), ('discount', 3,130)],
         'B': [('discount', 2,45)],
-        'E': [('free', 2, 'B')]}
+        'E': [('free', 2, 'B', 1)]}
     items = {}
 
     for sku in skus:
@@ -74,4 +74,20 @@ def checkout(skus: str):
                     total += offer_price
                     quantity -= required_qty
             elif offer_type == "free" and offer_details[1] in items:
-                required_qty, offer_price = offer_details
+                required_qty, free_item, free_qty = offer_details
+                if quantity >= required_qty:
+                    eligible_free_items = min(items[free_item], quantity // required_qty*free_qty)
+                    items[free_item] -= eligible_free_items
+                    if items[free_item] == 0:
+                        del items[free_item]
+        # Add any left over quantities post offers
+        total += quantity * prices[item]
+        return total
+    
+    for item,quantity in list(items.items()):
+        if item in offers:
+            total_price += apply_offers(item,quantity,offers[item])
+            del items[item]
+        else:
+            total_price += quantity * prices[item]
+    return total_price
