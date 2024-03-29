@@ -29,4 +29,8 @@ class TestCheckoutR5NewSolution():
         assert checkout("SSS") == 45
         # 65 + (3U + U free offer) 120 = 185
         assert checkout("USTZUUUY") == 185
+        assert checkout("K") == 70
+        assert checkout("ABCDEFGHIJKLMNOPQRSTUVW") == 795
+
+
 
