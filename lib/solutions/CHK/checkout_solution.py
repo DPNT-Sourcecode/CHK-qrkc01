@@ -86,6 +86,31 @@ def checkout_r2(skus: str):
 
     return total_price
 
+def apply_group_discount(items, prices, group_offer_details):
+    # Extract group offer details
+    group_items, (required_qty, group_price) = group_offer_details
+    eligible_items = [(item, items[item]) for item in group_items if item in items]
+
+    # Calculate how many times the offer can be applied
+    total_eligible_qty = sum(qty for _, qty in eligible_items)
+    offer_applications = total_eligible_qty // required_qty
+
+    discounted_price = 0
+    if offer_applications > 0:
+        # Apply the discount for as many sets as possible
+        discounted_price += offer_applications * group_price
+
+        # Deduct the items, prioritizing cheaper items first
+        for _ in range(offer_applications * required_qty):
+            cheapest_item = min(eligible_items, key=lambda x: prices[x[0]])[0]
+            items[cheapest_item] -= 1
+            if items[cheapest_item] == 0:
+                del items[cheapest_item]
+            # Update eligible_items for accurate min calculation
+            eligible_items = [(item, items[item]) for item in group_items if item in items]
+
+    return discounted_price, items
+
 def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers, group_discount_offers = None) -> int:
     """
     Core logic to calculate the total prices for a string of SKUs, 
@@ -113,24 +138,9 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
     total_price = 0
 
     if group_discount_offers:
-        for group, (qty_needed, offer_price) in group_discount_offers.items():
-            group_items_count = sum(items[item] for item in group if item in items)
-            while group_items_count >= qty_needed:
-                # Sort the group items by price ascending and apply discount to the cheapest
-                sorted_items = sorted([(item, items[item]) for item in group if item in items], key=lambda x: prices[x[0]])
-                total_price += offer_price
-                # Deduct the items
-                for item, count in sorted_items:
-                    if qty_needed > 0 and items[item] > 0:
-                        deduct = min(items[item], qty_needed)
-                        items[item] -= deduct
-                        qty_needed -= deduct
-                        if items[item] == 0:
-                            del items[item]  # Remove item if count goes to 0
-                # Recalculate for the next iteration
-                qty_needed = group_discount_offers[group][0]  # Reset qty_needed for the group offer
-                group_items_count = sum(items[item] for item in group if item in items)
-
+        for group_offer_details in group_discount_offers.values():
+            group_discount, items = apply_group_discount(items, prices, group_offer_details)
+            total_price += group_discount
     
     # Apply free item offers based on item comparison
     for item, quantity in items.copy().items():
@@ -258,6 +268,7 @@ def checkout(skus: str):
 
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers, group_discount_offers)
     return total
+
 
 
 
