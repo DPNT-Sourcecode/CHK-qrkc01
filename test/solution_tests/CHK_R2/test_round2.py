@@ -1,9 +1,11 @@
-from lib.solutions.SUM import sum_solution
+from lib.solutions.CHK.checkout_solution import checkout
 
 
-class TestSum():
-    def test_sum(self):
-        assert sum_solution.compute(1, 2) == 3
-    
-    def test_sum_zero(self):
-        assert sum_solution.compute(0,0) == 0
+class TestCheckoutNewSolution():
+    def test_discount_offers(self):
+        assert checkout("AAA") == 130
+        assert checkout("AAAAAA") == 250
+
+    def test_free_item(self):
+        assert checkout("EEB") == 80
+        assert checkout("EEEEBBB") == 190
