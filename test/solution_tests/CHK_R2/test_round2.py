@@ -9,3 +9,6 @@ class TestCheckoutNewSolution():
     def test_free_item(self):
         assert checkout("EEB") == 80
         assert checkout("EEEEBBB") == 190
+    
+    def test_illegal_input(self):
+        assert checkout("F") == -1
