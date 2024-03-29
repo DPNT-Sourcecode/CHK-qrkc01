@@ -160,7 +160,7 @@ def checkout_r3(skus: str):
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers)
     return total
     
-def checkout_r3(skus: str):
+def checkout(skus: str):
     """
     Calculate the total checkout value of all items in the basket
     considering any special offers
