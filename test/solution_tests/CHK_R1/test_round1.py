@@ -16,3 +16,9 @@ class TestCheckoutSolution():
     def test_special_offers(self):
         assert checkout("AAAA") == 180
         assert checkout("BB") == 45
+    
+    def test_mixed_specials(self):
+        assert checkout("AAABBCD") == 210
+    
+    def test_illegal_input(self):
+        assert checkout("E") == -1
