@@ -12,3 +12,11 @@ class TestCheckoutNewSolution():
     
     def test_illegal_input(self):
         assert checkout("F") == -1
+    
+    def test_mixed_free_discount(self):
+        # 8A -> 2 offers 130 + 200
+        # EEB -> get B free 80
+        # BB -> offer 45 
+        # Total = 470
+        assert checkout("AAAAAEEBAAABB") == 455
+        assert checkout("AAAAAEEBAAAB") == 440
