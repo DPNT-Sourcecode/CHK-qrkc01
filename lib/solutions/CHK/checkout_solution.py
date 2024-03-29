@@ -138,8 +138,8 @@ def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offe
     total_price = 0
 
     if group_discount_offers:
-        for group_offer_details in group_discount_offers.values():
-            group_discount, items = apply_group_discount(items, prices, group_offer_details)
+        for group_items, offer_details in group_discount_offers.items():
+            group_discount, items = apply_group_discount(items, prices, (group_items, offer_details))
             total_price += group_discount
     
     # Apply free item offers based on item comparison
@@ -268,6 +268,7 @@ def checkout(skus: str):
 
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers, group_discount_offers)
     return total
+
 
 
 
