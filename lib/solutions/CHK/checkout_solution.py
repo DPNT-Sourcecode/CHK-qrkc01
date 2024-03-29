@@ -86,7 +86,7 @@ def checkout_r2(skus: str):
 
     return total_price
 
-def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers):
+def calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers) -> int:
     """
     Core logic to calculate the total prices for a string of SKUs, 
     This considers prices, discount offers and free item offers.
@@ -196,4 +196,3 @@ def checkout(skus: str):
     total = calculate_total_checkout_value(skus, prices, discount_offers, free_item_offers)
     return total
     
-

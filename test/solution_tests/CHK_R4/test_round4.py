@@ -20,3 +20,9 @@ class TestCheckoutR4NewSolution():
         # Total = 470
         assert checkout("AAAAAEEBAAABB") == 455
         assert checkout("AAAAAEEBAAAB") == 440
+    
+    def test_extra_letters(self):
+        assert checkout("XYZ") == 150
+        assert checkout("RRRQ") == 150
+        assert checkout("VVVV") == 180
+        assert checkout("HHHHHHHHH") == 85
