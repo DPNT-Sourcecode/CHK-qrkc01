@@ -101,10 +101,10 @@ def checkout(skus: str):
     discount_offers = {
         'A': [(5, 200), (3, 130)],
         'B': [(2, 45)],
-        'F': [(3,20)] # same as Buy 2Fs get another F free
     }
     free_item_offers = {
         'E': [('B', 2, 1)], 
+        'F': [(3,2)]
     }
     items = {}
 
